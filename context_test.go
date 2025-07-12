@@ -91,3 +91,17 @@ func TestContextWithTimeout(t *testing.T) {
 	time.Sleep(2 * time.Second) // Wait for goroutine to finish
 	fmt.Println("Total goroutines after timeout:", runtime.NumGoroutine())
 }
+
+func TestContextWithDeadline(t *testing.T) {
+	fmt.Println("Total goroutines before:", runtime.NumGoroutine())
+	parent := context.Background()
+	ctx, cancel := context.WithDeadline(parent, time.Now().Add(5*time.Second))
+	defer cancel() // Ensure the context is cancelled after use
+	destination := CreateCounter(ctx)
+	fmt.Println("Total goroutines after:", runtime.NumGoroutine())
+	for n := range destination {
+		fmt.Println("Counter:", n)
+	}
+	time.Sleep(2 * time.Second) // Wait for goroutine to finish
+	fmt.Println("Total goroutines after deadline:", runtime.NumGoroutine())
+}
